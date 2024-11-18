@@ -1,3 +1,0 @@
-npx create-react-app mvp-frontend
-cd mvp-frontend
-npm start
