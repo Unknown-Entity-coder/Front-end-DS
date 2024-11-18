@@ -1,0 +1,117 @@
+
+npx create-react-app frontend
+cd frontend
+npm install axios react-router-dom
+
+
+-------------------------
+
+frontend/
+├── src/
+    ├── components/    # React components
+    ├── pages/         # Dashboard and Form
+    ├── services/      # API calls
+    ├── App.js         # Main app
+
+
+-------------------------
+
+import axios from 'axios';
+
+const API_URL = "http://localhost:3000/api";
+
+export const getUsers = async () => {
+    return await axios.get(`${API_URL}/users`);
+};
+
+export const addUser = async (user) => {
+    return await axios.post(`${API_URL}/users`, user);
+};
+
+-------------------------
+
+import React, { useEffect, useState } from "react";
+import { getUsers } from "../services/api";
+
+const Dashboard = () => {
+    const [users, setUsers] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const response = await getUsers();
+            setUsers(response.data);
+        };
+        fetchData();
+    }, []);
+
+    return (
+        <div>
+            <h1>User Dashboard</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {users.map((user) => (
+                        <tr key={user.user_id}>
+                            <td>{user.user_id}</td>
+                            <td>{user.username}</td>
+                            <td>{user.email}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+};
+
+
+
+-------------------------
+
+import React, { useState } from "react";
+import { addUser } from "../services/api";
+
+const UserForm = () => {
+    const [formData, setFormData] = useState({
+        username: "",
+        email: "",
+        password: "",
+    });
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        await addUser(formData);
+        alert("User added successfully");
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <input
+                type="text"
+                placeholder="Username"
+                value={formData.username}
+                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+            />
+            <input
+                type="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            />
+            <input
+                type="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            />
+            <button type="submit">Submit</button>
+        </form>
+    );
+};
+
+export default UserForm;
